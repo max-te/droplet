@@ -23,14 +23,17 @@ async fn extract_tar_body(req: Request<Body>) -> Result<Response<Body>, Infallib
 
     match req.method() {
         &Method::PATCH => {
+            println!("Receiving PATCH");
             let reader = req.into_body().into_stream().map_err(hpyertostdioerror).into_async_read();
             let ar= Archive::new(reader);
             match ar.unpack(Path::new(&get_target_dir())).await {
                 Ok(_) => {
                     *response.status_mut() = StatusCode::ACCEPTED;
+                    println!("PATCH applied");
                 }
-                Err(_) => {
+                Err(err) => {
                     *response.status_mut() = StatusCode::INTERNAL_SERVER_ERROR;
+                    println!("Error PATCHing: {}", err);
                 }
             }
         },
@@ -60,6 +63,7 @@ async fn main() {
     });
 
     let server = Server::bind(&addr).serve(make_svc);
+    println!("Listening on {}", addr);
 
     // Run this server for... forever!
     if let Err(e) = server.await {
