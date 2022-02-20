@@ -45,6 +45,14 @@ async fn extract_tar_body(req: Request<Body>) -> Result<Response<Body>, Infallib
     Ok(response)
 }
 
+async fn shutdown_signal() {
+    // Wait for the CTRL+C signal
+    tokio::signal::ctrl_c()
+        .await
+        .expect("failed to install CTRL+C signal handler");
+}
+
+
 #[tokio::main]
 async fn main() {
     // We'll bind to 127.0.0.1:3000
@@ -63,10 +71,11 @@ async fn main() {
     });
 
     let server = Server::bind(&addr).serve(make_svc);
-    println!("Listening on {}", addr);
-
+    let graceful = server.with_graceful_shutdown(shutdown_signal());
+    
     // Run this server for... forever!
-    if let Err(e) = server.await {
+    println!("Droplet listening on {} with target {}", addr, dir);
+    if let Err(e) = graceful.await {
         eprintln!("server error: {}", e);
     }
 }
