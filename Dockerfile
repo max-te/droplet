@@ -9,6 +9,7 @@ WORKDIR /build
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src
 RUN cargo install --target x86_64-unknown-linux-musl --path .
+RUN strip /usr/local/cargo/bin/droplet
 
 FROM scratch
 
