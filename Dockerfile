@@ -13,13 +13,13 @@ RUN cargo chef cook --release --recipe-path recipe.json --target x86_64-unknown-
 
 # Build the app
 COPY . .
-RUN cargo build --target x86_64-unknown-linux-musl
-RUN strip target/release/droplet
+RUN cargo build --release --target x86_64-unknown-linux-musl
+RUN strip target/x86_64-unknown-linux-musl/release/droplet
 
 # Assemble the release container
 FROM scratch
 WORKDIR /
-COPY --from=builder /app/target/release/droplet /
+COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/droplet /
 
 USER 1000:1000
 VOLUME "/target"
