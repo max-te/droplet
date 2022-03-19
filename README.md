@@ -1,6 +1,6 @@
 _droplet_ is a tiny Rust application whose sole purpose is to receive tarballs as HTTP `PATCH` requests and unpack them into a specified directory.
 This application is intended to be used as a sidecar via which your pipelines can deploy files for a static site.
-It does this by sharing a volume with a server such as [static-web-server](https://github.com/joseluisq/static-web-server).
+This can be done by having it share a volume with a server such as [static-web-server](https://github.com/joseluisq/static-web-server).
 
 droplet includes no authorization mechanism, so make sure it's only reachable from trusted systems.
 
