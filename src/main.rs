@@ -36,15 +36,15 @@ async fn shutdown_signal() {
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
-    let addr_str = env::var("DROPLET_ADDRESS").unwrap_or(String::from("0.0.0.0:3000"));
+    let addr_str = env::var("DROPLET_ADDRESS").unwrap_or_else(|_| String::from("0.0.0.0:3000"));
     let addr = addr_str.parse().expect("Could not parse socket address.");
 
-    let dir_str = env::var("DROPLET_TARGET_DIR").unwrap_or(String::from("."));
-    let dir = PathBuf::from(dir_str);
-    create_dir_all(dir.as_path()).await.expect(&format!(
-        "Could not create target directory {}",
-        dir.display()
-    ));
+    let dir = env::var_os("DROPLET_TARGET_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| PathBuf::from(r"."));
+    create_dir_all(dir.as_path())
+        .await
+        .unwrap_or_else(|_| panic!("Could not create target directory {}", dir.display()));
 
     let app = Router::new()
         .fallback(patch(extract_tar_body))
