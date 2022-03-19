@@ -16,7 +16,7 @@ WORKDIR /
 
 COPY --from=builder /usr/local/cargo/bin/droplet /
 
-USER 1000
+USER 1000:1000
 
 
 ENV DROPLET_TARGET_DIR=/target
