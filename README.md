@@ -8,14 +8,17 @@ droplet includes no authorization mechanism, so make sure it's only reachable fr
 
 droplet is configured through these environment variables:
 
-| Variable             | default        | Description                                            |
-| -------------------- | -------------- | ------------------------------------------------------ |
-| `DROPLET_ADDRESS`    | `0.0.0.0:3000` | The socket adress on which to listen for http requests |
-| `DROPLET_TARGET_DIR` | `/target`      | The directory into which tarballs are unpacked         |
+| Variable              | default        | Description                                                    |
+| --------------------- | -------------- | -------------------------------------------------------------- |
+| `DROPLET_ADDRESS`     | `0.0.0.0:3000` | The socket adress on which to listen for http requests         |
+| `DROPLET_TARGET_DIR`  | `/target`      | The directory into which tarballs are unpacked                 |
+| `DROPLET_AUTH_BEARER` |                | If set, require HTTP Beare Authorization with the given token. |
 
 ## Interface
+
 Say droplet is running on `localhost:3000` then sending a `PATCH` with an uncompressed tarball body to any path on that adress will unpack the tar into the target directory.
 E.g. with httpie:
+
 ```bash
 http patch localhost:3000/ < archive.tar
 ```
