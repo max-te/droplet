@@ -26,11 +26,22 @@ jobs:
         uses: docker/metadata-action@v2
         with:
           images: ghcr.io/${{ github.repository }}
+      - name: Set Cargo.toml version
+        shell: bash
+        if: ${{ github.ref != 'refs/heads/master' }}
+        env:
+          RELEASE_TAG: ${{ github.ref }}
+        run: |
+          mv Cargo.toml Cargo.toml.orig
+          sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" Cargo.toml.orig >Cargo.toml
+          mv Cargo.lock Cargo.lock.orig
+          sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" Cargo.lock.orig >Cargo.lock
       - name: Build and Push Versioned Docker Image
         id: build-and-push
         uses: docker/build-push-action@v2
         if: ${{ github.ref != 'refs/heads/master' }}
         with:
+          context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -41,6 +52,7 @@ jobs:
         uses: docker/build-push-action@v2
         if: ${{ github.ref == 'refs/heads/master' }}
         with:
+          context: .
           push: true
           tags: ghcr.io/${{ github.repository }}:latest
           labels: ${{ steps.meta.outputs.labels }}
